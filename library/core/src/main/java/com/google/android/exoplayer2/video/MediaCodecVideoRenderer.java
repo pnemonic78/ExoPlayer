@@ -56,10 +56,10 @@ import java.nio.ByteBuffer;
 public class MediaCodecVideoRenderer extends MediaCodecRenderer {
 
   private static final String TAG = "MediaCodecVideoRenderer";
-  private static final String KEY_CROP_LEFT = "crop-left";
-  private static final String KEY_CROP_RIGHT = "crop-right";
-  private static final String KEY_CROP_BOTTOM = "crop-bottom";
-  private static final String KEY_CROP_TOP = "crop-top";
+  protected static final String KEY_CROP_LEFT = "crop-left";
+  protected static final String KEY_CROP_RIGHT = "crop-right";
+  protected static final String KEY_CROP_BOTTOM = "crop-bottom";
+  protected static final String KEY_CROP_TOP = "crop-top";
 
   // Long edge length in pixels for standard video formats, in decreasing in order.
   private static final int[] STANDARD_LONG_EDGE_VIDEO_PX = new int[] {
@@ -837,12 +837,12 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
   }
 
   @TargetApi(23)
-  private static void setOutputSurfaceV23(MediaCodec codec, Surface surface) {
+  protected void setOutputSurfaceV23(MediaCodec codec, Surface surface) {
     codec.setOutputSurface(surface);
   }
 
   @TargetApi(21)
-  private static void configureTunnelingV21(MediaFormat mediaFormat, int tunnelingAudioSessionId) {
+  protected static void configureTunnelingV21(MediaFormat mediaFormat, int tunnelingAudioSessionId) {
     mediaFormat.setFeatureEnabled(CodecCapabilities.FEATURE_TunneledPlayback, true);
     mediaFormat.setInteger(MediaFormat.KEY_AUDIO_SESSION_ID, tunnelingAudioSessionId);
   }
@@ -935,7 +935,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
    * @return The maximum video size to use, or null if the size of {@code format} should be used.
    * @throws DecoderQueryException If an error occurs querying {@code codecInfo}.
    */
-  private static Point getCodecMaxSize(MediaCodecInfo codecInfo, Format format)
+  protected static Point getCodecMaxSize(MediaCodecInfo codecInfo, Format format)
       throws DecoderQueryException {
     boolean isVerticalVideo = format.height > format.width;
     int formatLongEdgePx = isVerticalVideo ? format.height : format.width;
@@ -973,7 +973,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
    * @return A maximum input buffer size in bytes, or {@link Format#NO_VALUE} if a maximum could not
    *     be determined.
    */
-  private static int getMaxInputSize(Format format) {
+  protected static int getMaxInputSize(Format format) {
     if (format.maxInputSize != Format.NO_VALUE) {
       // The format defines an explicit maximum input size. Add the total size of initialization
       // data buffers, as they may need to be queued in the same input buffer as the largest sample.
@@ -999,7 +999,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
    * @return A maximum input size in bytes, or {@link Format#NO_VALUE} if a maximum could not be
    *     determined.
    */
-  private static int getMaxInputSize(String sampleMimeType, int width, int height) {
+  protected static int getMaxInputSize(String sampleMimeType, int width, int height) {
     if (width == Format.NO_VALUE || height == Format.NO_VALUE) {
       // We can't infer a maximum input size without video dimensions.
       return Format.NO_VALUE;
@@ -1042,7 +1042,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
     return (maxPixels * 3) / (2 * minCompressionRatio);
   }
 
-  private static void setVideoScalingMode(MediaCodec codec, int scalingMode) {
+  protected void setVideoScalingMode(MediaCodec codec, int scalingMode) {
     codec.setVideoScalingMode(scalingMode);
   }
 
@@ -1055,7 +1055,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
    * @return True if the device is known to enable frame-rate conversion logic that negatively
    *     impacts ExoPlayer. False otherwise.
    */
-  private static boolean deviceNeedsAutoFrcWorkaround() {
+  protected static boolean deviceNeedsAutoFrcWorkaround() {
     // nVidia Shield prior to M tries to adjust the playback rate to better map the frame-rate of
     // content to the refresh rate of the display. For example playback of 23.976fps content is
     // adjusted to play at 1.001x speed when the output display is 60Hz. Unfortunately the
@@ -1070,7 +1070,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
    * <p>
    * If true is returned then we fall back to releasing and re-instantiating the codec instead.
    */
-  private static boolean codecNeedsSetOutputSurfaceWorkaround(String name) {
+  protected static boolean codecNeedsSetOutputSurfaceWorkaround(String name) {
     // Work around https://github.com/google/ExoPlayer/issues/3236,
     // https://github.com/google/ExoPlayer/issues/3355 and
     // https://github.com/google/ExoPlayer/issues/3439.
@@ -1090,18 +1090,18 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
    * @param second The second format.
    * @return Whether the codec will support adaptation between the two {@link Format}s.
    */
-  private static boolean areAdaptationCompatible(boolean codecIsAdaptive, Format first,
+  protected static boolean areAdaptationCompatible(boolean codecIsAdaptive, Format first,
       Format second) {
     return first.sampleMimeType.equals(second.sampleMimeType)
         && getRotationDegrees(first) == getRotationDegrees(second)
         && (codecIsAdaptive || (first.width == second.width && first.height == second.height));
   }
 
-  private static float getPixelWidthHeightRatio(Format format) {
+  protected static float getPixelWidthHeightRatio(Format format) {
     return format.pixelWidthHeightRatio == Format.NO_VALUE ? 1 : format.pixelWidthHeightRatio;
   }
 
-  private static int getRotationDegrees(Format format) {
+  protected static int getRotationDegrees(Format format) {
     return format.rotationDegrees == Format.NO_VALUE ? 0 : format.rotationDegrees;
   }
 
