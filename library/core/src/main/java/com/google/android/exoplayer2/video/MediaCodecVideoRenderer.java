@@ -345,7 +345,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
     }
   }
 
-  private void setSurface(Surface surface) throws ExoPlaybackException {
+  protected void setSurface(Surface surface) throws ExoPlaybackException {
     if (surface == null) {
       // Use a dummy surface if possible.
       if (dummySurface != null) {
@@ -404,6 +404,13 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
     codecMaxValues = getCodecMaxValues(codecInfo, format, streamFormats);
     MediaFormat mediaFormat = getMediaFormat(format, codecMaxValues, deviceNeedsAutoFrcWorkaround,
         tunnelingAudioSessionId);
+    codec.configure(mediaFormat, getCodecSurface(codecInfo), crypto, 0);
+    if (Util.SDK_INT >= 23 && tunneling) {
+      tunnelingOnFrameRenderedListener = new OnFrameRenderedListenerV23(codec);
+    }
+  }
+
+  protected Surface getCodecSurface(MediaCodecInfo codecInfo) {
     if (surface == null) {
       Assertions.checkState(shouldUseDummySurface(codecInfo.secure));
       if (dummySurface == null) {
@@ -411,10 +418,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
       }
       surface = dummySurface;
     }
-    codec.configure(mediaFormat, surface, crypto, 0);
-    if (Util.SDK_INT >= 23 && tunneling) {
-      tunnelingOnFrameRenderedListener = new OnFrameRenderedListenerV23(codec);
-    }
+    return surface;
   }
 
   @CallSuper
@@ -775,7 +779,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
     }
   }
 
-  /* package */ void maybeNotifyRenderedFirstFrame() {
+  protected void maybeNotifyRenderedFirstFrame() {
     if (!renderedFirstFrame) {
       renderedFirstFrame = true;
       eventDispatcher.renderedFirstFrame(surface);

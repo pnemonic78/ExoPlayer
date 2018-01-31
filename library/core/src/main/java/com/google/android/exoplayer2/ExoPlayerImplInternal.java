@@ -93,7 +93,7 @@ import java.io.IOException;
    * samples from a keyframe before their first sample with timestamp zero, so it must be set to a
    * value greater than or equal to the maximum key-frame interval in seekable periods.
    */
-  private static final int RENDERER_TIMESTAMP_OFFSET_US = 60000000;
+  private static final long RENDERER_TIMESTAMP_OFFSET_US = 60000000;
 
   private final Renderer[] renderers;
   private final RendererCapabilities[] rendererCapabilities;

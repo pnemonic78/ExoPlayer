@@ -1095,7 +1095,7 @@ public abstract class MediaCodecRenderer extends BaseRenderer {
     }
   }
 
-  private boolean shouldSkipOutputBuffer(long presentationTimeUs) {
+  protected boolean shouldSkipOutputBuffer(long presentationTimeUs) {
     // We avoid using decodeOnlyPresentationTimestamps.remove(presentationTimeUs) because it would
     // box presentationTimeUs, creating a Long object that would need to be garbage collected.
     int size = decodeOnlyPresentationTimestamps.size();
