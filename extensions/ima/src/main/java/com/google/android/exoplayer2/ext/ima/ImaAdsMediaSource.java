@@ -74,15 +74,18 @@ public final class ImaAdsMediaSource implements MediaSource {
   }
 
   @Override
-  public void prepareSource(final ExoPlayer player, boolean isTopLevelSource,
-      final Listener listener) {
-    adsMediaSource.prepareSource(player, false, new Listener() {
-      @Override
-      public void onSourceInfoRefreshed(MediaSource source, Timeline timeline,
-          @Nullable Object manifest) {
-        listener.onSourceInfoRefreshed(ImaAdsMediaSource.this, timeline, manifest);
-      }
-    });
+  public void prepareSource(
+      final ExoPlayer player, boolean isTopLevelSource, final Listener listener) {
+    adsMediaSource.prepareSource(
+        player,
+        isTopLevelSource,
+        new Listener() {
+          @Override
+          public void onSourceInfoRefreshed(
+              MediaSource source, Timeline timeline, @Nullable Object manifest) {
+            listener.onSourceInfoRefreshed(ImaAdsMediaSource.this, timeline, manifest);
+          }
+        });
   }
 
   @Override
@@ -104,5 +107,4 @@ public final class ImaAdsMediaSource implements MediaSource {
   public void releaseSource() {
     adsMediaSource.releaseSource();
   }
-
 }
